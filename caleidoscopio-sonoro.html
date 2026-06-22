@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caleidoscopio Sonoro — Audioguía</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+      font-family: Georgia, serif;
+      padding: 2rem;
+    }
+    .titulo {
+      color: #e0e0e0;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    #btn-play {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid #e0e0e0;
+      background: transparent;
+      color: #e0e0e0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 1.5rem;
+    }
+    #btn-play:focus {
+      outline: 3px solid #fff;
+      outline-offset: 4px;
+    }
+    #btn-play:hover {
+      background: #e0e0e0;
+      color: #0a0a0a;
+    }
+    #btn-play svg { width: 44px; height: 44px; }
+    #estado {
+      color: #888;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-align: center;
+      min-height: 1.2em;
+    }
+    #sc-player {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <p class="titulo">Caleidoscopio Sonoro</p>
+  <button id="btn-play" aria-label="Reproducir audioguía de Caleidoscopio Sonoro">
+    <svg id="icono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+  </button>
+  <p id="estado" aria-live="polite">Presioná para escuchar</p>
+  <iframe
+    id="sc-player"
+    scrolling="no"
+    frameborder="no"
+    allow="autoplay; encrypted-media"
+    src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2338357793&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+    title="Reproductora de audio oculta"
+    tabindex="-1"
+  ></iframe>
+  <script src="https://w.soundcloud.com/player/api.js"><\/script>
+  <script>
+    const widget = SC.Widget(document.getElementById('sc-player'));
+    const btn = document.getElementById('btn-play');
+    const estado = document.getElementById('estado');
+    const icono = document.getElementById('icono');
+    const iconoPlay = '<path d="M8 5v14l11-7z"/>';
+    const iconoPausa = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    let reproduciendo = false;
+    widget.bind(SC.Widget.Events.READY, function() {
+      btn.addEventListener('click', function() {
+        if (!reproduciendo) {
+          widget.play();
+          reproduciendo = true;
+          btn.setAttribute('aria-label', 'Pausar audioguía de Caleidoscopio Sonoro');
+          icono.innerHTML = iconoPausa;
+          estado.textContent = 'Reproduciendo…';
+        } else {
+          widget.pause();
+          reproduciendo = false;
+          btn.setAttribute('aria-label', 'Reproducir audioguía de Caleidoscopio Sonoro');
+          icono.innerHTML = iconoPlay;
+          estado.textContent = 'Pausado';
+        }
+      });
+    });
+    widget.bind(SC.Widget.Events.FINISH, function() {
+      reproduciendo = false;
+      btn.setAttribute('aria-label', 'Reproducir audioguía de Caleidoscopio Sonoro');
+      icono.innerHTML = iconoPlay;
+      estado.textContent = 'Fin del audio';
+    });
+  <\/script>
+</body>
+</html>
